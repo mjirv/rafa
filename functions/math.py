@@ -1,0 +1,5 @@
+
+def randInt():
+    return """
+    random()
+    """

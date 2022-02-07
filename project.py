@@ -2,4 +2,5 @@ from package import Engine
 from transforms import transform
 
 engine = Engine()
-engine.transform(transform)
+first_transform = engine.transform(transform)
+engine.head(first_transform)

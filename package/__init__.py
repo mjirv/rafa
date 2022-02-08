@@ -25,13 +25,14 @@ class Engine:
 
     def ctas(self, sql: str, table_name: str = None) -> str:
         """ Runs the sql block and returns a reference to the table created """
-        name = self._generate_random_name() if table_name is None else table_name 
+        name = self._generate_random_name() if table_name is None else table_name
+        print(name) 
 
         if table_name:
-            self._run_ddl(f"DROP TABLE {name}")
+            self._run_ddl(f"DROP TABLE IF EXISTS \"{name}\"")
 
         query = f"""
-            create table { name } as
+            create table \"{ name }\" as
                 { sql }
         """
         self._run_ddl(query)
@@ -50,8 +51,9 @@ class Engine:
         return methods[how](sql)
 
     def close(self):
-        for table in self.temp_tables:
-            self._run_ddl(f"drop table { table }")
+        while temp_table := self.temp_tables.pop():
+            self._run_ddl(f"drop table \"{ table }\"")
 
     def transform(self, transformer, **kwargs) -> str:
+
         return self.ctas(transformer.transform(**kwargs), table_name=transformer.__name__.split('.')[1])

@@ -54,4 +54,4 @@ class Engine:
             self._run_ddl(f"drop table { table }")
 
     def transform(self, transformer, **kwargs) -> str:
-        return self.ctas(transformer.transform(kwargs), table_name=transformer.__name__.split('.')[1])
+        return self.ctas(transformer.transform(**kwargs), table_name=transformer.__name__.split('.')[1])

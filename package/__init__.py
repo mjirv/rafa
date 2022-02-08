@@ -51,8 +51,8 @@ class Engine:
         return methods[how](sql)
 
     def close(self):
-        while temp_table := self.temp_tables.pop():
-            self._run_ddl(f"drop table \"{ table }\"")
+        while self.temp_tables:
+            self._run_ddl(f"drop table \"{ self.temp_tables.pop() }\"")
 
     def transform(self, transformer, **kwargs) -> str:
         self.close()

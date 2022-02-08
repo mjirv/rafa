@@ -23,7 +23,7 @@ class Engine:
         """ Runs a SQL block against the connection"""
         print(self.db.query(f"select * from {table}").head())
 
-    def ctas(self, sql: str, table_name: str = None) -> str:
+    def _ctas(self, sql: str, table_name: str = None) -> str:
         """ Runs the sql block and returns a reference to the table created """
         name = self._generate_random_name() if table_name is None else table_name
         print(name) 
@@ -41,14 +41,9 @@ class Engine:
             self.temp_tables.append(name)
 
         return name
-
-    def do(self, sql, how='ctas'):
-        """ Runs a command """
-        methods = {
-            'ctas': self.ctas,
-        }
-
-        return methods[how](sql)
+    
+    def select(self, sql: str):
+        return self.db.query(sql)
 
     def close(self):
         while self.temp_tables:
@@ -56,4 +51,4 @@ class Engine:
 
     def transform(self, transformer, **kwargs) -> str:
         self.close()
-        return self.ctas(transformer.transform(**kwargs), table_name=transformer.__name__.split('.')[1])
+        return self._ctas(transformer.transform(**kwargs), table_name=transformer.__name__.split('.')[1])

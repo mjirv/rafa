@@ -1,8 +1,8 @@
 from db import DemoDB
 from random import randrange
 
-class Engine:
-    def __init__(self) -> "Engine":
+class _Engine:
+    def __init__(self) -> "_Engine":
         """Takes in some yaml (json?) files and sets up the connection"""
         self.db = DemoDB()
         self.temp_tables = []
@@ -52,3 +52,5 @@ class Engine:
     def transform(self, transformer, **kwargs) -> str:
         self.close()
         return self._ctas(transformer.transform(**kwargs), table_name=transformer.__name__.split('.')[1])
+
+jules = _Engine()

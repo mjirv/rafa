@@ -6,7 +6,6 @@ class _Engine:
         """Takes in some yaml (json?) files and sets up the connection"""
         self.db = DemoDB()
         self.temp_tables = []
-        self.naame = ""
 
     def config(self):
         return

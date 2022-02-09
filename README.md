@@ -1,5 +1,4 @@
 # Jules
-## Just Use Languages Everyone Speaks
 
 Jules is a SQL-based data transformation package.
 

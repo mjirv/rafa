@@ -1,14 +1,14 @@
 from functions import math
-from jules import *
+from rafa import *
 from transforms import transform, transform_with_select
 
 # A typical transformation
-first_transform = jules.transform(transform)
+first_transform = rafa.transform(transform)
 
 # You can run select statements here too
-random_sample = jules.select(f"select * from { first_transform } order by { math.randInt() } limit 10")
+random_sample = rafa.select(f"select * from { first_transform } order by { math.randInt() } limit 10")
 print(random_sample)
 
 # Or even run a select inside a transformation by passing in the engine as a parameter
-third_transform = jules.transform(transform_with_select, jules=jules)
-jules.head(third_transform)
+third_transform = rafa.transform(transform_with_select, rafa=rafa)
+rafa.head(third_transform)

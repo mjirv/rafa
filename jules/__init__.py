@@ -6,10 +6,10 @@ class _Engine:
         """Takes in some yaml (json?) files and sets up the connection"""
         self.db = DemoDB()
         self.temp_tables = []
-        self.name = None
+        self.naame = ""
 
-    def config(self, name):
-        self.name = name
+    def config(self):
+        return
 
     def _generate_random_name(self) -> str:
         return f"tbl_{randrange(1000000)}"

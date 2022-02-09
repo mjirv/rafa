@@ -53,7 +53,11 @@ class _Engine:
             self._run_ddl(f"drop table \"{ self.temp_tables.pop() }\"")
 
     def transform(self, transformer, **kwargs) -> str:
+        transformed_table = self._ctas(transformer.transform(**kwargs), table_name=transformer.__name__.split('.')[1])
+        
+        # remove any temp tables created by the transformer
         self.close()
-        return self._ctas(transformer.transform(**kwargs), table_name=transformer.__name__.split('.')[1])
+        
+        return transformed_table
 
 jules = _Engine()

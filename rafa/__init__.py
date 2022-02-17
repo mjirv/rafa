@@ -7,7 +7,9 @@ class _Engine:
         self.db = DemoDB()
         self.temp_tables = []
 
-    def config(self):
+    def config(self, debug=False):
+        if debug:
+            print(self.db.tables)
         return
 
     def _generate_random_name(self) -> str:
@@ -52,12 +54,17 @@ class _Engine:
         while self.temp_tables:
             self._run_ddl(f"drop table \"{ self.temp_tables.pop() }\"")
 
-    def transform(self, transformer, **kwargs) -> str:
-        transformed_table = self._ctas(transformer.transform(**kwargs), table_name=transformer.__name__.split('.')[1])
+    def transform(self, transformer, name=None, **kwargs) -> str:
+        if not name:
+            name = transformer.__name__.split('.')[1]
+        transformed_table = self._ctas(transformer.transform(**kwargs), table_name=name)
         
         # remove any temp tables created by the transformer
         self.close()
 
         return transformed_table
+
+    def source(self, name: str):
+        return name
 
 rafa = _Engine()

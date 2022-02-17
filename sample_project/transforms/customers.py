@@ -1,2 +1,4 @@
-def transform():
-    pass
+def transform(sources):
+    return f"""
+        select * from {sources['customers']}
+    """

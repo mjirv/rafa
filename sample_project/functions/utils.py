@@ -5,3 +5,6 @@ def sequence(n: int):
         )
         select * from final
     """
+
+def list_group_cols(groupByCols):
+    return ", ".join([str(i + 1) for i in range(len(groupByCols))])

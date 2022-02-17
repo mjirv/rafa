@@ -1,14 +1,28 @@
-from functions import math
 from rafa import *
-from transforms import transform, transform_with_select
+from transforms import customers, invoices, revenue
 
-# A typical transformation
-first_transform = rafa.transform(transform)
+rafa.config(debug=True)
 
-# You can run select statements here too
-random_sample = rafa.select(f"select * from { first_transform } order by { math.randInt() } limit 10")
-print(random_sample)
+# Register sources
+src_customers = rafa.source('Customer')
+src_employees = rafa.source('Employee')
+src_invoices = rafa.source('Invoice')
+src_invoice_items = rafa.source('InvoiceLine')
 
-# Or even run a select inside a transformation by passing in the engine as a parameter
-third_transform = rafa.transform(transform_with_select, rafa=rafa)
-rafa.head(third_transform)
+m_customers = rafa.transform(customers, sources={"customers": src_customers})
+
+# Create revenue tables
+m_invoices = rafa.transform(invoices, sources={"invoices": src_invoices, "invoice_items": src_invoice_items})
+m_monthly_revenue = rafa.transform(revenue, name='monthly_revenue', period='month', sources={"invoices": m_invoices})
+m_weekly_revenue = rafa.transform(revenue, name='weekly_revenue', period='week', sources={"invoices": m_invoices})
+
+# Create employee revenue table - transforms can be dynamic based on inputs
+revenue_by_support_rep = rafa.transform(
+    revenue, 
+    sources={"invoices": m_invoices, "customers": m_customers}, 
+    join={"name": "customers", "on": "CustomerId"},
+    groupByCols=['SupportRepId'],
+    name='revenue_by_support_rep'
+)
+
+# TODO should wee include any select statements?

@@ -1,4 +1,3 @@
-
 def randInt():
     return """
     random()

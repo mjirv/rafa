@@ -1,4 +1,0 @@
-def randInt():
-    return """
-    random()
-    """

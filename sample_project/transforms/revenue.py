@@ -1,4 +1,5 @@
 from functions.utils import list_group_cols
+from functions.dates import date_trunc
 
 def transform(period=None, sources=[], groupByCols=[], join=None):
     date_periods = {
@@ -12,7 +13,7 @@ def transform(period=None, sources=[], groupByCols=[], join=None):
 
     return f"""
         select 
-            { f"strftime('{ date_periods[period] }', InvoiceDate) as {period}," if period else "" }
+            { f"{date_trunc(period, 'InvoiceDate')} as {period}," if period else "" }
             { ", ".join(groupByCols) + "," if groupByCols != [] else "" }
             sum(Total) as revenue
         from { sources['invoices'] } invoices

@@ -6,6 +6,10 @@ Rafa is a SQL-based data transformation package.
 It allows you to create templated SQL using Python and execute it against your data warehouse to create analytics tables. 
 
 ## Usage
+1. Run `pip3 install rafa`
+2. Copy the files from `sample_project/` to get started
+
+## About
 Rafa has three components:
 1. **Projects** 
     - The DAG of Rafa. A series of transforms to run against your database

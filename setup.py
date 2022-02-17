@@ -13,6 +13,11 @@ setup(
     author_email="michael.j.irvine@gmail.com",
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
+    entry_points={
+        "console_scripts": [
+            "rafa = rafa.main:main",
+        ],
+    },
     packages=find_packages(),
     install_requires=["db.py"], # add any additional packages that 
     # needs to be installed along with your package. Eg: 'caer'

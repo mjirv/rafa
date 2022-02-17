@@ -1,7 +1,7 @@
 from rafa import *
 from transforms import customers, invoices, revenue
 
-rafa.config()
+rafa.config(debug=True)
 
 # Register sources
 src_customers = rafa.source('Customer')

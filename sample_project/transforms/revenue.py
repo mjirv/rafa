@@ -12,7 +12,7 @@ def transform(period=None, sources=[], groupByCols=[], join=None):
         select 
             { f"strftime('{ date_periods[period] }', InvoiceDate) as {period}," if period else "" }
             { ", ".join(groupByCols) + "," if groupByCols != [] else "" }
-            sum(total_price) as revenue
+            sum(Total) as revenue
         from { sources['invoices'] } invoices
         { f"left join { sources[join['name']] } {join['name']} using ({ join['on'] })" if join else "" }
 

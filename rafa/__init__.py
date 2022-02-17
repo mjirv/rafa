@@ -9,6 +9,7 @@ class _Engine:
 
     def config(self, debug=False):
         if debug:
+            print(self.db.filename)
             print(self.db.tables)
         return
 

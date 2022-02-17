@@ -3,12 +3,12 @@ def transform(sources):
         with invoice_totals as (
             select 
                 "InvoiceId"
-                , sum("Quantity" * "UnitPrice") as total_price
+                , sum("Quantity") as Quantity
             from {sources['invoice_items']}
             group by 1
         )
 
-        select invoices.*, total_price
+        select invoices.*, Quantity
         from {sources['invoices']} invoices
         left join invoice_totals
         using ("InvoiceId")

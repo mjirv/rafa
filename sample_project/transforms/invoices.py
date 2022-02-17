@@ -8,8 +8,10 @@ def transform(sources):
             group by 1
         )
 
-        select invoices.*, Quantity
+        select 
+            invoices.*
+            , Quantity
         from {sources['invoices']} invoices
         left join invoice_totals
-        using ("InvoiceId")
+            on invoices.InvoiceId = invoice_totals.InvoiceId
     """

@@ -8,6 +8,8 @@ def transform(period=None, sources=[], groupByCols=[], join=None):
         'year': '%Y'
     }
 
+    groupNumbers = list_group_cols(groupByCols + ([period] if period is not None else []))
+
     return f"""
         select 
             { f"strftime('{ date_periods[period] }', InvoiceDate) as {period}," if period else "" }
@@ -16,6 +18,6 @@ def transform(period=None, sources=[], groupByCols=[], join=None):
         from { sources['invoices'] } invoices
         { f"left join { sources[join['name']] } {join['name']} using ({ join['on'] })" if join else "" }
 
-        group by { list_group_cols(groupByCols + ([period] if period is not None else []))}
-        order by 1, 2
+        group by { groupNumbers }
+        order by { groupNumbers }
     """

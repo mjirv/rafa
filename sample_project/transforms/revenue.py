@@ -2,13 +2,6 @@ from functions.utils import list_group_cols
 from functions.dates import date_trunc
 
 def transform(period=None, sources=[], groupByCols=[], join=None):
-    date_periods = {
-        'day': '%Y-%m-%d',
-        'week': '%Y-%W',
-        'month': '%Y-%m',
-        'year': '%Y'
-    }
-
     groupNumbers = list_group_cols(groupByCols + ([period] if period is not None else []))
 
     return f"""

@@ -8,6 +8,7 @@ It allows you to create templated SQL using Python and execute it against your d
 ## Usage
 1. Run `pip3 install rafa`
 2. Copy the files from `sample_project/` to get started
+3. Run `python3 project.py`
 
 ## About
 Rafa has three components:

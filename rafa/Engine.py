@@ -14,7 +14,7 @@ class _Engine:
         return
 
     def _generate_random_name(self) -> str:
-        return f"tbl_{randrange(1000000)}"
+        return f"_rafa_tbl_{randrange(10000000)}"
 
     def _run_ddl(self, query):
         try:
@@ -35,7 +35,6 @@ class _Engine:
     def _ctas(self, sql: str, table_name: str = None) -> str:
         """ Runs the sql block and returns a reference to the table created """
         name = self._generate_random_name() if table_name is None else table_name
-        print(name) 
 
         if table_name:
             self._run_ddl(f"DROP TABLE IF EXISTS \"{name}\"")
@@ -62,6 +61,8 @@ class _Engine:
         if not name:
             name = transformer.__name__.split('.')[1]
         transformed_table = self._ctas(transformer.transform(**kwargs), table_name=name)
+
+        print(f"- transformed {name}")
         
         # remove any temp tables created by the transformer
         self.close()
@@ -82,3 +83,4 @@ class _Engine:
 
     def test(self, transformer):
         transformer.test(transformer, self)
+        self.close()

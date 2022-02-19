@@ -41,8 +41,7 @@ def test(self, rafa):
             "Quantity": 5
         }]
 
-        # Call the transform we are testing with our mocks
-        # Note that we use rafa.temp() instead of rafa.transform() so that the output table is temporary
+        # Note that we use rafa.temp_transform() instead of rafa.transform() so that the output table is temporary
         t_invoices = rafa.temp_transform(self, sources={"invoices": mock_src_invoices, "invoice_items": mock_src_invoice_items})
         
         assert rafa.select_all(t_invoices).to_dict('records') == expected

@@ -19,6 +19,14 @@ def main():
             with open(transformPath, 'w') as f:
                 initialTransform = """def transform():
     return f"select 'hello world!' as hello"
+
+def test(self, rafa):
+    # Set the expected result
+    expected = [{ "hello": "hello world!" }]
+
+    # Note that we use rafa.temp_transform() instead of rafa.transform() so that the output table is temporary
+    res = rafa.temp_transform(self)
+    assert rafa.select_all(res).to_dict('records') == expected
                 """
                 f.write(initialTransform)
         
@@ -29,6 +37,10 @@ def main():
                 initialProject = """from rafa import *
 from transforms import my_first_transform
 
+### Run tests ###
+rafa.test(my_first_transform)
+
+### Run transforms ###
 rafa.transform(my_first_transform)
                 """
                 f.write(initialProject)

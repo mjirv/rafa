@@ -1,14 +1,20 @@
 from rafa import *
 from transforms import customers, invoices, revenue
 
+### Configure database ###
 rafa.config(debug=True)
 
-# Register sources
+### Run tests ###
+rafa.test(invoices)
+
+### Register sources ###
 src_customers = rafa.source('Customer')
 src_employees = rafa.source('Employee')
 src_invoices = rafa.source('Invoice')
 src_invoice_items = rafa.source('InvoiceLine')
 
+### Run Transforms ###
+# Create basic customers table
 m_customers = rafa.transform(customers, sources={"customers": src_customers})
 
 # Create revenue tables
@@ -24,5 +30,3 @@ revenue_by_support_rep = rafa.transform(
     groupByCols=['SupportRepId'],
     name='revenue_by_support_rep'
 )
-
-# TODO should wee include any select statements?

@@ -17,6 +17,7 @@ Rafa has three components:
     - See `sample_project/project.py`
 2. **Transforms** 
     - Similar to dbt models. Files with a `transform()` function that returns a SQL select statement
+    - Optionally, they can include a `test(self, rafa)` function that runs any number of unit tests
     - See `sample_project/transforms/`
 3. **Functions**
     - Reusable SQL snippets. Similar to a macro in dbt

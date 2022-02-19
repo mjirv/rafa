@@ -45,10 +45,16 @@ rafa.transform(my_first_transform)
                 """
                 f.write(initialProject)
     
+    def runProject():
+        sys.path.append(os.getcwd())
+        import project
+
     def runTests():
         pass
 
     if sys.argv[1] == 'init':
         initProject(sys.argv[2])
+    elif sys.argv[1] == 'run':
+        runProject()
     elif sys.argv[1] == 'test':
         runTests()

@@ -2,11 +2,11 @@
 
 ### Quickstart
 1. Run `pip3 install rafa`
-2. In this directory, run `python3 project.py`
+2. In this directory, run `rafa run`
 3. Use your favorite SQLite client to connect to the demo DB and see the tables created.
     - The project prints the location of the database when you run it
     - For example:
-        ```michael@DESKTOP-URS6SAQ:~/rafa/sample_project$ python3 project.py 
+        ```michael@DESKTOP-URS6SAQ:~/rafa/sample_project$ rafa run 
             Indexing schema. This will take a second...finished!
             /home/michael/.local/lib/python3.8/site-packages/db/data/chinook.sqlite
         ```

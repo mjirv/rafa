@@ -8,12 +8,12 @@ It allows you to create templated SQL using Python and execute it against your d
 ## Usage
 1. Run `pip3 install rafa`
 2. Run `rafa init hello_world` to create a new Rafa project
-3. Run `python3 project.py`
+3. Run `cd hello_world && rafa run`
 
 ## About
 Rafa has three components:
 1. **Projects** 
-    - The DAG of Rafa. A series of transforms to run against your database
+    - The DAG of Rafa. A series of tests and transforms to run
     - See `sample_project/project.py`
 2. **Transforms** 
     - Similar to dbt models. Files with a `transform()` function that returns a SQL select statement

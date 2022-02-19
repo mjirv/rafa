@@ -1,10 +1,10 @@
 import os
 from pathlib import Path
 import sys
+from . import rafa
 
 def main():
-    if sys.argv[1] == 'init':
-        projectName = sys.argv[2]
+    def initProject(projectName):
         print(projectName)
 
         # 1. Create project directory, and
@@ -32,3 +32,11 @@ from transforms import my_first_transform
 rafa.transform(my_first_transform)
                 """
                 f.write(initialProject)
+    
+    def runTests():
+        pass
+
+    if sys.argv[1] == 'init':
+        initProject(sys.argv[2])
+    elif sys.argv[1] == 'test':
+        runTests()

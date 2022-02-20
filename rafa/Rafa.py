@@ -63,8 +63,30 @@ class Rafa:
     def _get_schema(self) -> str:
         return self.config["schema"] + "." if self.config["schema"] else ""
 
-    def _get_table_path(self, table) -> str:
-        return 
+    def _get_table_path(self, schema: str, name: str) -> str:
+        if schema is None or isinstance(self.db._con, sqlite3.Connection):
+            return f'"{name}"'
+        else:
+            return f'"{schema}"."{name}"'
+
+    def _get_table(self, name, schema=None, allow_none=False) -> str:
+        self.db.refresh_schema()
+        possible_tables = self.db.find_table(name)
+
+        if len(possible_tables) == 1:
+            return possible_tables[0]
+
+        if schema is None:
+            schema = self.config["schema"]
+
+        for possibility in possible_tables:
+            if possibility.schema == schema:
+                return possibility
+
+        if not allow_none:
+            raise Exception(f"cannot find table \"{name}\"; you may need to explicitly define a schema with source(name, schema=\"your_schema\")")
+
+        return None
 
     def _generate_random_name(self) -> str:
         return f"_rafa_tbl_{randrange(10000000)}"
@@ -85,23 +107,38 @@ class Rafa:
     def select_all(self, table: str):
         return self.db.query(f"select * from {table}")
 
-    def _ctas(self, sql: str, table_name: str = None) -> str:
+    def _ctas(self, sql: str, table_name: str = None, schema: str = None) -> str:
         """ Runs the sql block and returns a reference to the table created """
         name = self._generate_random_name() if table_name is None else table_name
 
+        table = self._get_table(name, schema, allow_none=True)
+
+        # if the randomly-generated name conflicts (unlikely), try again with a new name
+        while table and not table_name:
+            name = self._generate_random_name()
+            table = self._get_table(name, schema, allow_none=True)
+
         if table_name:
-            self._run_ddl(f"DROP TABLE IF EXISTS \"{name}\"")
+            self._run_ddl(f"DROP TABLE IF EXISTS {table}")
+
+        table_path = str(table) if table is not None else self._get_table_path(schema, name)
 
         query = f"""
-            create table \"{ name }\" as
+            create table {table_path} as
                 { sql }
         """
         self._run_ddl(query)
 
-        if not table_name:
-            self.temp_tables.append(name)
+        self.db.refresh_schema()
 
-        return name
+        print(self.db.tables)
+
+        table = self._get_table(name, schema)
+
+        if not table_name:
+            self.temp_tables.append(table)
+
+        return table
     
     def select(self, sql: str):
         return self.db.query(sql)
@@ -110,10 +147,10 @@ class Rafa:
         while self.temp_tables:
             self._run_ddl(f"drop table \"{ self.temp_tables.pop() }\"")
 
-    def transform(self, transformer, name=None, **kwargs) -> str:
+    def transform(self, transformer, name=None, schema=None, **kwargs) -> str:
         if not name:
             name = transformer.__name__.split('.')[1]
-        transformed_table = self._ctas(transformer.transform(**kwargs), table_name=name)
+        transformed_table = self._ctas(transformer.transform(**kwargs), table_name=name, schema=schema)
 
         print(f"- transformed {name}")
         
@@ -135,16 +172,7 @@ class Rafa:
         if schema is None:
             schema = self.config["source_schema"]
 
-        possible_tables = self.db.find_table(name)
-
-        if schema is None:
-            return possible_tables[0]
-
-        for possibility in possible_tables:
-            if possibility.schema == schema:
-                return possibility
-
-        raise Exception("cannot find source table; you may need to explicitly define a schema with source(name, schema=\"your_schema\")")
+        return self._get_table(name, schema)
 
     def test(self, transformer):
         transformer.test(transformer, self)

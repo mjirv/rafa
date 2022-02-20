@@ -29,4 +29,3 @@ Add connection information in `profiles/.env.default`.
 - For example, `rafa run --profile staging` will use `profiles/.env.staging`.
 
 See [sample_project/profiles/.env.default](https://github.com/mjirv/rafa/blob/main/sample_project/profiles/.env.default) for an example including all possible fields.
-```

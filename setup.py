@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.0.7' 
+VERSION = '0.0.9' 
 DESCRIPTION = 'A data transformation tool for analytics teams'
 LONG_DESCRIPTION = 'Rafa lets you write templated SQL via Python and run it against your data warehouse to create tables for analytics.'
 

@@ -1,8 +1,17 @@
-import json
+import argparse
 import os
 from db import DB, DemoDB
 from dotenv import load_dotenv
 from random import randrange
+
+parser = argparse.ArgumentParser()
+subparser = parser.add_subparsers(dest='command')
+argRun = subparser.add_parser('run')
+argInit = subparser.add_parser('init')
+
+argRun.add_argument('--profile', help="the profile to use, e.g. \"--profile staging\" uses `profiles/.env.staging`")
+argInit.add_argument('name', help="the name of the project to create")
+args = parser.parse_args()
 
 class Rafa:
     def __init__(self, demo=False, config_path='profiles/.env.default', debug=False) -> "Rafa":
@@ -15,6 +24,8 @@ class Rafa:
         if demo:
             self.db = DemoDB()
         elif config_path:
+            if args.profile:
+                config_path=f'profiles/.env.{args.profile}'
             load_dotenv(config_path)
             data = {
                 "hostname": os.getenv('RAFA_HOSTNAME'),
@@ -29,6 +40,7 @@ class Rafa:
             self.db = DB(**data)
 
         if debug:
+            print(args)
             print(self.db.filename)
             print(self.db.tables)
 

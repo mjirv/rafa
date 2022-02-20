@@ -1,17 +1,44 @@
-from db import DemoDB
+import json
+import os
+from db import DB, DemoDB
+from dotenv import load_dotenv
 from random import randrange
 
-class _Engine:
-    def __init__(self) -> "_Engine":
-        """Takes in some yaml (json?) files and sets up the connection"""
-        self.db = DemoDB()
+class Rafa:
+    def __init__(self, demo=False, config_path='config.yml', debug=False) -> "Rafa":
+        """Takes in some configuration variables and sets up the connection"""
         self.temp_tables = []
+        self.db = None
 
-    def config(self, debug=False):
+        ### Initialize database ###
+        data = {}
+        if demo:
+            self.db = DemoDB()
+        
+        else:
+            if config_path:
+                with open(config_path, 'r') as f:
+                    data = json.load(f)
+            else:
+                # Load from env file
+                load_dotenv()
+                data = {
+                    "hostname": os.getenv('RAFA_HOSTNAME'),
+                    "username": os.getenv('RAFA_USERNAME'),
+                    "password": os.getenv('RAFA_PASSWORD'),
+                    "port": os.getenv('RAFA_PORT'),
+                    "dbname": os.getenv('RAFA_DBNAME'),
+                    "dbtype": os.getenv('RAFA_DBTYPE'),
+                    "filename": os.getenv('RAFA_SQLITE_FILENAME')
+                }
+            self.db = DB(**data)
+
         if debug:
             print(self.db.filename)
             print(self.db.tables)
-        return
+
+        if self.db is None:
+            raise Exception("DB is missing or misconfigured. Did you forget to include a config file?")
 
     def _generate_random_name(self) -> str:
         return f"_rafa_tbl_{randrange(10000000)}"

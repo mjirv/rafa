@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 import sys
-from . import rafa
 
 def main():
     def initProject(projectName):
@@ -34,8 +33,10 @@ def test(self, rafa):
         projectPath = f"{projectName}/project.py"
         if not os.path.exists(projectPath):
             with open(projectPath, 'w') as f:
-                initialProject = """from rafa import *
+                initialProject = """from rafa import Rafa
 from transforms import my_first_transform
+
+rafa = Rafa(demo=True)
 
 ### Run tests ###
 rafa.test(my_first_transform)

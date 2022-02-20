@@ -1,8 +1,8 @@
-from rafa import *
+from rafa import Rafa
 from transforms import customers, invoices, revenue
 
 ### Configure database ###
-rafa.config(debug=True)
+rafa = Rafa(demo=True, debug=True)
 
 ### Run tests ###
 rafa.test(invoices)

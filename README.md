@@ -23,3 +23,23 @@ Rafa has three components:
     - Reusable SQL snippets. Similar to a macro in dbt
     - See `sample_project/functions/`
 
+## Configuration
+Add connection information in `profiles/.env.[PROFILE_NAME]`.
+
+By default, `rafa run` will use `profiles/.env.default`. To specify a different profile, use `rafa run --profile PROFILE_NAME`.
+
+For example, `rafa run --profile staging` will use `profiles/.env.staging`.
+
+Below are the fields that can be included:
+```bash
+# dbtype is "redshift" | "postgres" | "sqlite"
+RAFA_DBTYPE="redshift"
+
+# use filename for SQLite, hostname for all others
+RAFA_HOSTNAME="some-aws-hostname.us-east-1.aws.localhost"
+RAFA_FILENAME="use_this_instead_of_hostname_for.sqlite"
+RAFA_PORT=5439
+
+RAFA_USERNAME="rafa"
+RAFA_PASSWORD="fakepassword"
+```

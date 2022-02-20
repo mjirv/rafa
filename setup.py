@@ -19,7 +19,7 @@ setup(
         ],
     },
     packages=find_packages(),
-    install_requires=["db.py", "python-dotenv"], # add any additional packages that 
+    install_requires=["db.py", "python-dotenv", "psycopg2-binary"], # add any additional packages that 
     # needs to be installed along with your package. Eg: 'caer'
     
     keywords=['python', 'first package'],

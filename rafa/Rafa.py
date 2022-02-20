@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from random import randrange
 
 class Rafa:
-    def __init__(self, demo=False, config_path='config.yml', debug=False) -> "Rafa":
+    def __init__(self, demo=False, config_path='profiles/.env.default', debug=False) -> "Rafa":
         """Takes in some configuration variables and sets up the connection"""
         self.temp_tables = []
         self.db = None
@@ -14,23 +14,18 @@ class Rafa:
         data = {}
         if demo:
             self.db = DemoDB()
-        
-        else:
-            if config_path:
-                with open(config_path, 'r') as f:
-                    data = json.load(f)
-            else:
-                # Load from env file
-                load_dotenv()
-                data = {
-                    "hostname": os.getenv('RAFA_HOSTNAME'),
-                    "username": os.getenv('RAFA_USERNAME'),
-                    "password": os.getenv('RAFA_PASSWORD'),
-                    "port": os.getenv('RAFA_PORT'),
-                    "dbname": os.getenv('RAFA_DBNAME'),
-                    "dbtype": os.getenv('RAFA_DBTYPE'),
-                    "filename": os.getenv('RAFA_SQLITE_FILENAME')
-                }
+        elif config_path:
+            load_dotenv(config_path)
+            data = {
+                "hostname": os.getenv('RAFA_HOSTNAME'),
+                "username": os.getenv('RAFA_USERNAME'),
+                "password": os.getenv('RAFA_PASSWORD'),
+                "port": os.getenv('RAFA_PORT'),
+                "dbname": os.getenv('RAFA_DBNAME'),
+                "dbtype": os.getenv('RAFA_DBTYPE'),
+                "filename": os.getenv('RAFA_SQLITE_FILENAME')
+            }
+            print(data)
             self.db = DB(**data)
 
         if debug:

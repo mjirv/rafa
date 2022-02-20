@@ -45,6 +45,33 @@ rafa.test(my_first_transform)
 rafa.transform(my_first_transform)
                 """
                 f.write(initialProject)
+
+        #5. Add config file, though it will be unused
+        Path(f"{projectName}/profiles").mkdir(parents=True, exist_ok=True)
+        configPath = f"{projectName}/profiles/.env.default"
+        if not os.path.exists(configPath):
+            with open(configPath, 'w') as f:
+                f.write(f"""# dbtype is "redshift" | "postgres" | "sqlite"
+RAFA_DBTYPE="redshift"
+
+# use filename for SQLite, hostname for all others
+RAFA_HOSTNAME="some-aws-hostname.us-east-1.aws.localhost"
+RAFA_FILENAME="use_this_instead_of_hostname_for.sqlite"
+RAFA_PORT=5439
+
+RAFA_USERNAME="rafa"
+RAFA_PASSWORD="fakepassword"
+                """)
+        
+        # 6. add gitignore
+        gitignorePath = f"{projectName}/.gitignore"
+        if not os.path.exists(gitignorePath):
+            with open(gitignorePath, 'w') as f:
+                f.write("""
+*__pycache__/
+profiles/
+*venv/
+                """)
     
     def runProject():
         sys.path.append(os.getcwd())

@@ -2,7 +2,7 @@ from rafa import Rafa
 from transforms import customers, invoices, revenue
 
 ### Configure database ###
-rafa = Rafa(demo=True, debug=True)
+rafa = Rafa()
 
 ### Run tests ###
 rafa.test(invoices)

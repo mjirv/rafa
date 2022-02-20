@@ -1,6 +1,7 @@
 import argparse
 import os
-from db import DB, DemoDB
+import sqlite3
+from db import db, DemoDB
 from dotenv import load_dotenv
 from random import randrange
 
@@ -13,20 +14,32 @@ argRun.add_argument('--profile', help="the profile to use, e.g. \"--profile stag
 argInit.add_argument('name', help="the name of the project to create")
 args = parser.parse_args()
 
+# Override db.py's Table class str representation for easier querying
+DB = db.DB
+Table = db.Table
+
+Table.__str__ = lambda self: f'"{self.name}"' if isinstance(self._con, sqlite3.Connection) else f'"{self.schema}"."{self.name}"'
+
 class Rafa:
     def __init__(self, demo=False, config_path='profiles/.env.default', debug=False) -> "Rafa":
         """Takes in some configuration variables and sets up the connection"""
         self.temp_tables = []
         self.db = None
 
+        if args.profile:
+            config_path=f'profiles/.env.{args.profile}'
+        load_dotenv(config_path)
+
+        self.config = {
+            "source_schema": '"' + os.getenv('RAFA_SOURCE_SCHEMA') + '"' if os.getenv('RAFA_SOURCE_SCHEMA') else None,
+            "schema": '"' + os.getenv('RAFA_SCHEMA') + '"' if os.getenv('RAFA_SCHEMA') else None
+        }
+
         ### Initialize database ###
         data = {}
         if demo:
             self.db = DemoDB()
         elif config_path:
-            if args.profile:
-                config_path=f'profiles/.env.{args.profile}'
-            load_dotenv(config_path)
             data = {
                 "hostname": os.getenv('RAFA_HOSTNAME'),
                 "username": os.getenv('RAFA_USERNAME'),
@@ -46,6 +59,12 @@ class Rafa:
 
         if self.db is None:
             raise Exception("DB is missing or misconfigured. Did you forget to include a config file?")
+
+    def _get_schema(self) -> str:
+        return self.config["schema"] + "." if self.config["schema"] else ""
+
+    def _get_table_path(self, table) -> str:
+        return 
 
     def _generate_random_name(self) -> str:
         return f"_rafa_tbl_{randrange(10000000)}"
@@ -112,8 +131,20 @@ class Rafa:
         """ for key, value in record.items()]) for record in records])
         return self._ctas(sql)
 
-    def source(self, name: str):
-        return name
+    def source(self, name: str, schema: str = None) -> Table:
+        if schema is None:
+            schema = self.config["source_schema"]
+
+        possible_tables = self.db.find_table(name)
+
+        if schema is None:
+            return possible_tables[0]
+
+        for possibility in possible_tables:
+            if possibility.schema == schema:
+                return possibility
+
+        raise Exception("cannot find source table; you may need to explicitly define a schema with source(name, schema=\"your_schema\")")
 
     def test(self, transformer):
         transformer.test(transformer, self)

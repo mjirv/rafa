@@ -18,8 +18,6 @@ args = parser.parse_args()
 DB = db.DB
 Table = db.Table
 
-Table.__str__ = lambda self: f'"{self.name}"' if isinstance(self._con, sqlite3.Connection) else f'"{self.schema}"."{self.name}"'
-
 class Rafa:
     def __init__(self, demo=False, config_path='profiles/.env.default', debug=False) -> "Rafa":
         """Takes in some configuration variables and sets up the connection"""
@@ -49,7 +47,6 @@ class Rafa:
                 "dbtype": os.getenv('RAFA_DBTYPE'),
                 "filename": os.getenv('RAFA_SQLITE_FILENAME')
             }
-            print(data)
             self.db = DB(**data)
 
         if debug:
@@ -60,17 +57,27 @@ class Rafa:
         if self.db is None:
             raise Exception("DB is missing or misconfigured. Did you forget to include a config file?")
 
+        self._is_sqlite = isinstance(self.db.con, sqlite3.Connection)
+
+
+        Table.__str__ = (lambda self: f'"{self.name}"') if self._is_sqlite else lambda self: f'"{self.schema}"."{self.name}"'
+
     def _get_schema(self) -> str:
         return self.config["schema"] + "." if self.config["schema"] else ""
 
     def _get_table_path(self, schema: str, name: str) -> str:
-        if schema is None or isinstance(self.db._con, sqlite3.Connection):
+        if schema is None or self._is_sqlite:
             return f'"{name}"'
         else:
             return f'"{schema}"."{name}"'
 
     def _get_table(self, name, schema=None, allow_none=False) -> str:
+        # Refresh schema so that we get the latest tables
+        if self._is_sqlite:
+            self.db._create_sqlite_metatable()
+
         self.db.refresh_schema()
+
         possible_tables = self.db.find_table(name)
 
         if len(possible_tables) == 1:
@@ -128,11 +135,6 @@ class Rafa:
                 { sql }
         """
         self._run_ddl(query)
-
-        self.db.refresh_schema()
-
-        print(self.db.tables)
-
         table = self._get_table(name, schema)
 
         if not table_name:
@@ -145,7 +147,7 @@ class Rafa:
 
     def close(self):
         while self.temp_tables:
-            self._run_ddl(f"drop table \"{ self.temp_tables.pop() }\"")
+            self._run_ddl(f"drop table { self.temp_tables.pop() }")
 
     def transform(self, transformer, name=None, schema=None, **kwargs) -> str:
         if not name:

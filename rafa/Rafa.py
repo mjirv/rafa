@@ -45,7 +45,9 @@ class Rafa:
                 "port": os.getenv('RAFA_PORT'),
                 "dbname": os.getenv('RAFA_DBNAME'),
                 "dbtype": os.getenv('RAFA_DBTYPE'),
-                "filename": os.getenv('RAFA_SQLITE_FILENAME')
+                "filename": os.getenv('RAFA_SQLITE_FILENAME'),
+                "bq_project": os.getenv('BIGQUERY_PROJECT'),
+                "bq_default_dataset": os.getenv('BIGQUERY_DEFAULT_DATASET')
             }
             self.db = DB(**data)
 
@@ -58,18 +60,23 @@ class Rafa:
             raise Exception("DB is missing or misconfigured. Did you forget to include a config file?")
 
         self._is_sqlite = isinstance(self.db.con, sqlite3.Connection)
+        self._is_bigquery = self.db.dbtype == 'bigquery'
 
-
-        Table.__str__ = (lambda self: f'"{self.name}"') if self._is_sqlite else lambda self: f'"{self.schema}"."{self.name}"'
+        if self._is_sqlite:
+            Table.__str__ = lambda self: f'"{self.name}"'
+        elif self._is_bigquery:
+            Table.__str__ = lambda self: f'{self.schema}.{self.name}'
+        else:
+            Table.__str__ = lambda self: f'"{self.schema}"."{self.name}"'
 
     def _get_schema(self) -> str:
         return self.config["schema"] + "." if self.config["schema"] else ""
 
     def _get_table_path(self, schema: str, name: str) -> str:
         if schema is None or self._is_sqlite:
-            return f'"{name}"'
+            return f'{name}'
         else:
-            return f'"{schema}"."{name}"'
+            return f'{schema}.{name}'
 
     def _get_table(self, name, schema=None, allow_none=False) -> str:
         # Refresh schema so that we get the latest tables
@@ -96,7 +103,7 @@ class Rafa:
         return None
 
     def _generate_random_name(self) -> str:
-        return f"_rafa_tbl_{randrange(10000000)}"
+        return f"rafa_tbl_{randrange(10000000)}"
 
     def _run_ddl(self, query):
         try:
